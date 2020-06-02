@@ -59,7 +59,7 @@ func (s *store) Append(p []byte) (n uint64, pos uint64, err error) {
 	return uint64(w), pos, nil
 }
 
-// Read content given the position (offset) then return the content as slice of bytes
+// Read content given the position then return the content as slice of bytes
 func (s *store) ReadAt(pos uint64) ([]byte, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -69,7 +69,7 @@ func (s *store) ReadAt(pos uint64) ([]byte, error) {
 		return nil, err
 	}
 
-	// Get size of content by getting the first 8 bytes starting from the offset
+	// Get size of content by getting the first 8 bytes starting from the position
 	size := make([]byte, lenWidth)
 	if _, err := s.File.ReadAt(size, int64(pos)); err != nil {
 		return nil, err
