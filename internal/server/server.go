@@ -3,12 +3,30 @@ package server
 import (
 	"context"
 	api "github.com/tPhume/proglog/api/v1"
+	"google.golang.org/grpc"
 )
 
 var _ api.LogServer = (*grpcServer)(nil)
 
 type Config struct {
 	CommitLog CommitLog
+}
+
+type CommitLog interface {
+	Append(record *api.Record) (uint64, error)
+	Read(offset uint64) (*api.Record, error)
+}
+
+func NewGRPCServer(config *Config) (*grpc.Server, error) {
+	grsv := grpc.NewServer()
+
+	srv, err := newgrpcServer(config)
+	if err != nil {
+		return nil, err
+	}
+
+	api.RegisterLogServer(grsv, srv)
+	return grsv, nil
 }
 
 type grpcServer struct {
